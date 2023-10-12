@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const UserController = require("../controllers/UserController")
+const BookingController = require("../controllers/BookingController")
 
 // For User Registration
-router.post('/register', UserController.register);
+router.post('/booking', BookingController.booking);
 
 // for User login
-router.post('/login', UserController.login);
+// router.post('/login', UserController.login);
 
 // for admin logout
 // router.get('/logout' , auth, UserController.logout);

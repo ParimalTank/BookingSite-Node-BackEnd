@@ -1,32 +1,39 @@
-const mongoose = require('mongoose');
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const signup = async (req, res) => {
+// Random 6 digit OTP Generator
+let OTP = Math.random();
+OTP = OTP * 1000000;
+OTP = parseInt(OTP);
 
-    await User.find({ email: req.body.email })
+const register = async (req, res) => {
+
+    const userData = await req.body;
+    console.log("userData: ", userData);
+
+    await User.find({ email: userData.email })
         .then((user) => {
             if (user.length >= 1) {
                 res.status(409).json({
                     message: "Already Hava a Account Using This Email , Try Another One",
                 });
             } else {
-                bcrypt.hash(req.body.password, 10, (err, hash) => {
-                    console.log(hash);
+                bcrypt.hash(userData.password, 10, (err, hash) => {
                     if (err) {
                         return res.status(500).json({
                             error: err,
                         });
                     } else {
                         const user = new User({
-                            email: req.body.email,
+                            username: userData.username,
+                            email: userData.email,
                             password: hash,
+                            otp: OTP
                         });
                         user
                             .save()
                             .then((result) => {
-                                console.log(result);
 
                                 res.status(201).json({
                                     message: "User Created Successfully",
@@ -45,14 +52,13 @@ const signup = async (req, res) => {
         });
 }
 
-
-
 // User Login
 
-const login = (req, res) => {
-    console.log("req: ", req);
+const login = async (req, res) => {
 
-    User.findOne({ email: req.body.email })
+    const userData = await req.body;
+
+    User.findOne({ email: userData.email })
         .then(user => {
             if (user.length < 1) {
                 return res.status(404).json({
@@ -60,7 +66,7 @@ const login = (req, res) => {
                 })
             } else {
 
-                bcrypt.compare(req.body.password, user.password, (err, result) => {
+                bcrypt.compare(userData.password, user.password, (err, result) => {
 
                     if (err) {
 
@@ -114,8 +120,15 @@ const logout = (req, res, next) => {
     }
 }
 
+// also Required a Token But for now use OTP  // This is Remaining 
+// const verification = (req, res) => {
+
+//     const { otp } = await req.body;
+// }
+
+
 module.exports = {
     logout,
     login,
-    signup
+    register
 }
