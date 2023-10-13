@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const bookingSchema = mongoose.Schema({
+
+    dateOfBook: {
+        type: String,
+        required: true
+    },
     startTime: {
         type: String,
         required: true
@@ -19,11 +24,11 @@ const bookingSchema = mongoose.Schema({
     },
     payment: {
         type: Number,
-        required: true
+        default: 100
     },
     paymentStatus: {
         type: Boolean,
-        required: true
+        default: false
     },
     appliedCouponCode: {
         type: String,
